@@ -1,0 +1,151 @@
+<?xml version="1.0"?>
+<!--
+ROS启动文件示例
+参考: https://github.com/matreshka15/ROS-based-USV-project
+-->
+
+<launch>
+    <!-- 启动参数 -->
+    <arg name="node_name_prefix" default="example_" />
+    <arg name="publish_rate" default="10.0" />
+    <arg name="use_sim_time" default="false" />
+    <arg name="debug" default="false" />
+    
+    <!-- 设置ROS参数 -->
+    <param name="/use_sim_time" value="$(arg use_sim_time)" />
+    <param name="example_node/publish_rate" value="$(arg publish_rate)" />
+    <param name="example_node/debug_mode" value="$(arg debug)" />
+    
+    <!-- 加载配置文件 -->
+    <rosparam command="load" file="$(find ros_install_guide)/config/example_config.yaml" />
+    
+    <!-- 启动roscore（如果需要） -->
+    <!-- <node name="rosout" pkg="rosout" type="rosout" output="screen" /> -->
+    
+    <!-- 启动发布者节点 -->
+    <node 
+        name="$(arg node_name_prefix)talker" 
+        pkg="ros_install_guide" 
+        type="talker.py" 
+        output="screen"
+        respawn="true"
+        respawn_delay="3"
+        launch-prefix="$(arg debug) && python3 -m pdb" if="$(arg debug)">
+        
+        <!-- 节点参数 -->
+        <param name="topic_name" value="chatter" />
+        <param name="queue_size" value="10" />
+        
+        <!-- 环境变量 -->
+        <env name="PYTHONPATH" value="$(env PYTHONPATH):$(find ros_install_guide)/scripts" />
+        
+        <!-- 日志配置 -->
+        <remap from="rosout" to="$(arg node_name_prefix)rosout" />
+    </node>
+    
+    <!-- 启动订阅者节点 -->
+    <node 
+        name="$(arg node_name_prefix)listener" 
+        pkg="ros_install_guide" 
+        type="listener.py" 
+        output="screen"
+        respawn="true"
+        respawn_delay="3">
+        
+        <!-- 节点参数 -->
+        <param name="topic_name" value="chatter" />
+        <param name="queue_size" value="10" />
+        <param name="enable_statistics" value="true" />
+        
+        <!-- 依赖关系 -->
+        <node ns="dependencies" name="wait_for_talker" pkg="roslaunch" type="wait_for_node" args="$(arg node_name_prefix)talker" />
+    </node>
+    
+    <!-- 启动rviz（如果需要可视化） -->
+    <node 
+        name="rviz" 
+        pkg="rviz" 
+        type="rviz" 
+        args="-d $(find ros_install_guide)/config/example_rviz.rviz"
+        output="log"
+        launch-prefix="xterm -e"
+        if="$(arg debug)">
+    </node>
+    
+    <!-- 启动动态重配置服务器 -->
+    <node 
+        name="dynamic_reconfigure_server" 
+        pkg="dynamic_reconfigure" 
+        type="server" 
+        args="$(find ros_install_guide)/cfg/ExampleConfig.cfg"
+        output="screen">
+    </node>
+    
+    <!-- 启动TF广播器 -->
+    <node 
+        name="tf_broadcaster" 
+        pkg="tf" 
+        type="static_transform_publisher" 
+        args="0 0 0 0 0 0 base_link laser_link 100"
+        output="log">
+    </node>
+    
+    <!-- 启动ROS服务 -->
+    <node 
+        name="example_service_server" 
+        pkg="ros_install_guide" 
+        type="service_server.py" 
+        output="screen">
+    </node>
+    
+    <!-- 启动定时器 -->
+    <timer period="$(arg publish_rate)" oneshot="false">
+        <node 
+            name="periodic_task" 
+            pkg="ros_install_guide" 
+            type="periodic_task.py" 
+            output="log"
+            args="--period $(arg publish_rate)" />
+    </timer>
+    
+    <!-- 启动文件包含 -->
+    <!-- <include file="$(find other_package)/launch/other.launch">
+        <arg name="param1" value="value1" />
+    </include> -->
+    
+    <!-- 条件执行 -->
+    <group if="$(arg use_sim_time)">
+        <node 
+            name="simulator" 
+            pkg="gazebo_ros" 
+            type="gzserver" 
+            args="$(find ros_install_guide)/worlds/example.world"
+            output="screen" />
+    </group>
+    
+    <!-- 命名空间 -->
+    <group ns="robot1">
+        <node 
+            name="talker" 
+            pkg="ros_install_guide" 
+            type="talker.py" 
+            output="screen" />
+    </group>
+    
+    <group ns="robot2">
+        <node 
+            name="talker" 
+            pkg="ros_install_guide" 
+            type="talker.py" 
+            output="screen" />
+    </group>
+    
+    <!-- 启动完成通知 -->
+    <node 
+        name="startup_notifier" 
+        pkg="ros_install_guide" 
+        type="startup_notifier.py" 
+        output="screen"
+        args="Example system started successfully!" />
+    
+</launch>

@@ -1,0 +1,169 @@
+# ROS配置文件示例
+# 参考: https://github.com/matreshka15/ROS-based-USV-project
+
+# 节点配置
+node_config:
+  # 发布者配置
+  talker:
+    node_name: "talker_node"
+    topic_name: "chatter"
+    publish_rate: 10.0  # Hz
+    message_queue_size: 10
+    enable_logging: true
+    
+  # 订阅者配置
+  listener:
+    node_name: "listener_node"
+    topic_name: "chatter"
+    message_queue_size: 10
+    enable_statistics: true
+    log_level: "INFO"  # DEBUG, INFO, WARN, ERROR, FATAL
+
+# 通信配置
+communication:
+  # ROS主节点配置
+  ros_master:
+    uri: "http://localhost:11311"
+    timeout: 10.0  # 秒
+    
+  # 网络配置
+  network:
+    tcp_nodelay: true
+    buffer_size: 1024
+    compress_messages: false
+
+# 传感器配置示例
+sensors:
+  # IMU传感器
+  imu:
+    topic: "/imu/data"
+    frame_id: "imu_link"
+    update_rate: 100.0
+    calibration_file: "config/imu_calibration.yaml"
+    
+  # GPS传感器
+  gps:
+    topic: "/gps/fix"
+    frame_id: "gps_link"
+    update_rate: 10.0
+    use_rtk: false
+    
+  # 激光雷达
+  lidar:
+    topic: "/scan"
+    frame_id: "lidar_link"
+    update_rate: 10.0
+    angle_min: -3.14159
+    angle_max: 3.14159
+    angle_increment: 0.01745
+    range_min: 0.1
+    range_max: 50.0
+
+# 控制器配置示例
+controllers:
+  # 运动控制器
+  motion_controller:
+    linear_velocity_limit: 1.0  # m/s
+    angular_velocity_limit: 0.5  # rad/s
+    acceleration_limit: 0.5
+    deceleration_limit: 1.0
+    
+  # PID控制器参数
+  pid:
+    linear_x:
+      p: 1.0
+      i: 0.1
+      d: 0.05
+      integral_limit: 1.0
+      
+    angular_z:
+      p: 2.0
+      i: 0.2
+      d: 0.1
+      integral_limit: 2.0
+
+# 导航配置
+navigation:
+  # 路径规划
+  path_planning:
+    algorithm: "A*"  # A*, Dijkstra, RRT*
+    map_frame: "map"
+    odom_frame: "odom"
+    base_frame: "base_link"
+    robot_radius: 0.5
+    
+  # 避障
+  obstacle_avoidance:
+    enabled: true
+    safety_distance: 0.3
+    max_obstacle_distance: 5.0
+
+# 调试配置
+debug:
+  enable_verbose_logging: false
+  publish_tf: true
+  publish_debug_markers: false
+  record_bag: false
+  bag_file_prefix: "ros_bag_"
+
+# 启动配置
+launch:
+  # 自动启动的节点
+  auto_start_nodes:
+    - "roscore"
+    - "talker_node"
+    - "listener_node"
+    
+  # 启动顺序
+  startup_order:
+    1: "roscore"
+    2: "sensors"
+    3: "controllers"
+    4: "navigation"
+    5: "user_interface"
+
+# 硬件配置
+hardware:
+  # 串口配置
+  serial:
+    port: "/dev/ttyUSB0"
+    baudrate: 115200
+    timeout: 0.1
+    parity: "none"
+    stopbits: 1
+    
+  # PWM输出
+  pwm:
+    frequency: 50.0
+    channels:
+      - name: "motor_left"
+        pin: 18
+        min_value: 1000
+        max_value: 2000
+        
+      - name: "motor_right"
+        pin: 19
+        min_value: 1000
+        max_value: 2000
+
+# 安全配置
+safety:
+  # 紧急停止
+  emergency_stop:
+    enabled: true
+    topic: "/emergency_stop"
+    timeout: 1.0  # 秒
+    
+  # 系统监控
+  system_monitor:
+    cpu_usage_limit: 80.0  # %
+    memory_usage_limit: 80.0  # %
+    temperature_limit: 80.0  # °C
+
+# 版本信息
+version:
+  config_version: "1.0"
+  ros_version: "Noetic"
+  last_updated: "2025-11-12"
+  author: "ROS Developer"
+  description: "ROS系统配置文件示例"
