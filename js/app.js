@@ -231,6 +231,17 @@ class ROSInstallationGuide {
     
     // Start the installation process
     startInstallation() {
+        if (!this.currentROS) {
+            // Show error message if no ROS version is selected
+            const compatibilityMsg = document.getElementById('compatibility-message');
+            compatibilityMsg.className = 'compatibility-message error';
+            compatibilityMsg.innerHTML = this.t('incompatible', { 
+                os: rosData.osVersions[this.currentOS]?.name || 'Unknown OS', 
+                ros: 'No ROS version selected' 
+            });
+            return;
+        }
+        
         this.isInstallationStarted = true;
         this.currentStep = 0;
         
@@ -249,6 +260,9 @@ class ROSInstallationGuide {
         
         // Update progress
         this.updateProgress();
+        
+        // Update navigation buttons with correct translations
+        this.updateNavigationButtons();
     }
     
     // Initialize step indicators
@@ -415,11 +429,14 @@ class ROSInstallationGuide {
         
         prevBtn.disabled = this.currentStep === 0;
         
+        // Update button text with translations
+        prevBtn.textContent = this.t('previous');
+        
         // Change next button text on last step
         if (this.currentStep === this.installationSteps.length - 1) {
-            nextBtn.textContent = 'Finish';
+            nextBtn.textContent = this.t('finish');
         } else {
-            nextBtn.textContent = 'Next';
+            nextBtn.textContent = this.t('next');
         }
     }
     
