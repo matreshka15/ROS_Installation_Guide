@@ -1,128 +1,1066 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Interactive ROS Installation Guide - Step-by-step instructions for installing ROS on Ubuntu">
-    <meta name="keywords" content="ROS, Robot Operating System, Installation, Ubuntu, Interactive Guide">
+    <meta name="description" content="ROS 安装指南 - 完整的 Robot Operating System 安装教程，支持 Ubuntu 系统">
+    <meta name="keywords" content="ROS, Robot Operating System, 安装指南, Ubuntu, 机器人操作系统, Noetic, Melodic">
     <meta name="author" content="ROS Installation Guide Team">
-    <title>Interactive ROS Installation Guide</title>
+    <title>ROS 安装指南 | ROS Installation Guide</title>
     
     <!-- Open Graph Meta Tags -->
-    <meta property="og:title" content="Interactive ROS Installation Guide">
-    <meta property="og:description" content="Step-by-step instructions for installing ROS on Ubuntu">
+    <meta property="og:title" content="ROS 安装指南 | ROS Installation Guide">
+    <meta property="og:description" content="完整的 ROS 安装指南，包含系统要求、安装步骤、常见问题解决等">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://yourusername.github.io/ROS_Installation_Guide/">
-    
-    <!-- Twitter Card Meta Tags -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Interactive ROS Installation Guide">
-    <meta name="twitter:description" content="Step-by-step instructions for installing ROS on Ubuntu">
     
     <!-- Favicon -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🤖</text></svg>">
     
-    <!-- CSS Files -->
-    <link rel="stylesheet" href="css/style.css">
+    <!-- Google Fonts for better Chinese display -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     
-    <!-- Prism.js for Syntax Highlighting -->
-    <!-- CSS included directly in prism.js -->
+    <!-- Prism.js for Code Highlighting -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+    
+    <style>
+        :root {
+            --primary-color: #2196F3;
+            --primary-dark: #1565C0;
+            --secondary-color: #4CAF50;
+            --accent-color: #FF9800;
+            --text-primary: #212121;
+            --text-secondary: #757575;
+            --bg-primary: #FFFFFF;
+            --bg-secondary: #F5F5F5;
+            --bg-code: #263238;
+            --border-color: #E0E0E0;
+            --shadow: 0 2px 8px rgba(0,0,0,0.1);
+            --shadow-hover: 0 4px 16px rgba(0,0,0,0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.8;
+            color: var(--text-primary);
+            background: var(--bg-secondary);
+            scroll-behavior: smooth;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-color) 100%);
+            color: white;
+            padding: 3rem 0;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+
+        .header .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.95;
+            font-weight: 300;
+        }
+
+        .header-links {
+            margin-top: 1rem;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .header-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50px;
+            text-decoration: none;
+            color: white;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+        }
+
+        .header-link:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        /* Navigation */
+        .nav {
+            background: var(--bg-primary);
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 999;
+            box-shadow: var(--shadow);
+        }
+
+        .nav-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            overflow-x: auto;
+            gap: 0.5rem;
+        }
+
+        .nav-link {
+            padding: 1rem 1.5rem;
+            text-decoration: none;
+            color: var(--text-secondary);
+            font-weight: 500;
+            white-space: nowrap;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+        }
+
+        .nav-link:hover {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        /* Content Sections */
+        .section {
+            background: var(--bg-primary);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow);
+            transition: box-shadow 0.3s ease;
+        }
+
+        .section:hover {
+            box-shadow: var(--shadow-hover);
+        }
+
+        .section h2 {
+            color: var(--primary-dark);
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 3px solid var(--primary-color);
+        }
+
+        .section h3 {
+            color: var(--primary-color);
+            font-size: 1.5rem;
+            margin: 1.5rem 0 1rem 0;
+        }
+
+        .section h4 {
+            color: var(--text-primary);
+            font-size: 1.2rem;
+            margin: 1rem 0 0.75rem 0;
+        }
+
+        /* Table Styles */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            font-size: 0.95rem;
+            box-shadow: var(--shadow);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        thead {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        tbody tr:hover {
+            background: var(--bg-secondary);
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Code Blocks */
+        pre {
+            background: var(--bg-code) !important;
+            border-radius: 8px;
+            padding: 1.5rem !important;
+            overflow-x: auto;
+            margin: 1.5rem 0;
+            box-shadow: var(--shadow);
+        }
+
+        code {
+            font-family: 'JetBrains Mono', 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+
+        :not(pre) > code {
+            background: var(--bg-secondary);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            color: var(--accent-color);
+            font-size: 0.85rem;
+        }
+
+        /* Lists */
+        ul, ol {
+            margin: 1rem 0 1rem 2rem;
+        }
+
+        li {
+            margin: 0.5rem 0;
+        }
+
+        /* Alert Boxes */
+        .alert {
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+            border-left: 4px solid;
+        }
+
+        .alert-info {
+            background: #E3F2FD;
+            border-color: var(--primary-color);
+            color: #1565C0;
+        }
+
+        .alert-success {
+            background: #E8F5E9;
+            border-color: var(--secondary-color);
+            color: #2E7D32;
+        }
+
+        .alert-warning {
+            background: #FFF3E0;
+            border-color: var(--accent-color);
+            color: #E65100;
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--text-primary);
+            color: white;
+            padding: 3rem 0;
+            margin-top: 4rem;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            text-align: center;
+        }
+
+        .footer a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Back to Top Button */
+        .back-to-top {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 50px;
+            height: 50px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: var(--shadow-hover);
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .back-to-top.show {
+            opacity: 1;
+        }
+
+        .back-to-top:hover {
+            background: var(--primary-dark);
+            transform: translateY(-3px);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8rem;
+            }
+
+            .header .subtitle {
+                font-size: 1rem;
+            }
+
+            .container {
+                padding: 0 1rem;
+            }
+
+            .section {
+                padding: 1.5rem;
+            }
+
+            .section h2 {
+                font-size: 1.5rem;
+            }
+
+            table {
+                font-size: 0.85rem;
+            }
+
+            th, td {
+                padding: 0.75rem;
+            }
+
+            pre {
+                padding: 1rem !important;
+                font-size: 0.85rem;
+            }
+        }
+
+        /* Additional Icon Styles */
+        .emoji {
+            font-style: normal;
+        }
+    </style>
 </head>
 <body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <h1>🤖 ROS 安装指南</h1>
+            <p class="subtitle">完整的 Robot Operating System 安装教程和配置指南</p>
+            <div class="header-links">
+                <a href="https://github.com/matreshka15/ROS_Installation_Guide" target="_blank" class="header-link">
+                    📦 GitHub 仓库
+                </a>
+                <a href="https://github.com/matreshka15/ROS-based-USV-project" target="_blank" class="header-link">
+                    🚢 参考项目
+                </a>
+                <a href="http://wiki.ros.org/" target="_blank" class="header-link">
+                    📚 ROS 官方文档
+                </a>
+                <a href="interactive.html" class="header-link">
+                    🎯 交互式安装向导
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation Menu -->
+    <nav class="nav">
+        <div class="nav-content">
+            <a href="#overview" class="nav-link">项目概述</a>
+            <a href="#requirements" class="nav-link">系统要求</a>
+            <a href="#versions" class="nav-link">版本选择</a>
+            <a href="#installation" class="nav-link">安装步骤</a>
+            <a href="#scripts" class="nav-link">自动化脚本</a>
+            <a href="#testing" class="nav-link">测试验证</a>
+            <a href="#troubleshooting" class="nav-link">常见问题</a>
+            <a href="#examples" class="nav-link">示例代码</a>
+            <a href="#references" class="nav-link">参考资料</a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
     <div class="container">
-        <!-- Header Section -->
-        <header class="header">
-            <div class="header-content">
-                <div class="language-switcher">
-                    <button id="lang-zh" class="lang-btn active">中文</button>
-                    <button id="lang-en" class="lang-btn">English</button>
-                </div>
-                <h1 data-i18n="title">Interactive ROS Installation Guide</h1>
-                <p class="subtitle" data-i18n="subtitle">Step-by-step instructions for installing Robot Operating System on Ubuntu</p>
-            </div>
-        </header>
-        
-        <!-- Main Content -->
-        <main class="main-content">
-            <!-- Distribution Selection -->
-            <section class="selection-section" id="selection-section">
-                <h2 data-i18n="selectConfiguration">Select Your Configuration</h2>
-                <div class="selection-grid">
-                    <div class="selection-item">
-                        <label for="os-select" data-i18n="linuxDistribution">Linux Distribution</label>
-                        <select id="os-select" class="select-input">
-                            <option value="" data-i18n="selectUbuntuVersion">-- Select Ubuntu Version --</option>
-                            <option value="ubuntu-18.04">Ubuntu 18.04 LTS (Bionic Beaver)</option>
-                            <option value="ubuntu-20.04">Ubuntu 20.04 LTS (Focal Fossa)</option>
-                            <option value="ubuntu-22.04">Ubuntu 22.04 LTS (Jammy Jellyfish)</option>
-                        </select>
-                    </div>
-                    <div class="selection-item">
-                        <label for="ros-select" data-i18n="rosDistribution">ROS Distribution</label>
-                        <select id="ros-select" class="select-input" disabled>
-                            <option value="" data-i18n="selectRosVersion">-- Select ROS Version --</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="compatibility-message" id="compatibility-message"></div>
-                <button class="btn btn-primary" id="start-install-btn" disabled data-i18n="startInstallation">
-                    Start Installation
-                </button>
-            </section>
+        <!-- Project Overview -->
+        <section id="overview" class="section">
+            <h2>📋 项目概述</h2>
+            <p>本项目提供了完整的 ROS（Robot Operating System）安装指南，基于参考项目 <a href="https://github.com/matreshka15/ROS-based-USV-project" target="_blank">ROS-based-USV-project</a>。ROS 是一个开源的机器人操作系统框架，提供了硬件抽象、设备驱动、库函数、可视化工具等功能，广泛应用于机器人开发领域。</p>
+        </section>
+
+        <!-- System Requirements -->
+        <section id="requirements" class="section">
+            <h2>💻 系统要求</h2>
             
-            <!-- Installation Steps -->
-            <section class="installation-section" id="installation-section" style="display: none;">
-                <!-- Progress Bar -->
-                <div class="progress-container">
-                    <div class="progress-bar" id="progress-bar"></div>
-                    <div class="progress-text" id="progress-text"></div>
-                </div>
-                
-                <!-- Step Navigation -->
-                <div class="step-navigation">
-                    <button class="btn btn-secondary" id="prev-btn" disabled data-i18n="previous">
-                        Previous
-                    </button>
-                    <div class="step-indicators" id="step-indicators"></div>
-                    <button class="btn btn-primary" id="next-btn" data-i18n="next">
-                        Next
-                    </button>
-                </div>
-                
-                <!-- Step Content -->
-                <div class="step-content" id="step-content">
-                    <!-- Step content will be dynamically loaded here -->
-                </div>
-            </section>
+            <h3>支持的操作系统</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ROS 版本</th>
+                        <th>Ubuntu 版本</th>
+                        <th>支持状态</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Noetic Ninjemys</td>
+                        <td>Ubuntu 20.04 LTS</td>
+                        <td><span class="emoji">✅</span> 推荐</td>
+                    </tr>
+                    <tr>
+                        <td>Melodic Morenia</td>
+                        <td>Ubuntu 18.04 LTS</td>
+                        <td><span class="emoji">✅</span> 支持</td>
+                    </tr>
+                    <tr>
+                        <td>Kinetic Kame</td>
+                        <td>Ubuntu 16.04 LTS</td>
+                        <td><span class="emoji">❌</span> 已停止支持</td>
+                    </tr>
+                    <tr>
+                        <td>ROS 2 Iron Irwini</td>
+                        <td>Ubuntu 22.04 LTS</td>
+                        <td><span class="emoji">✅</span> 支持</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>硬件要求</h3>
+            <ul>
+                <li><strong>处理器</strong>: 64 位处理器（x86_64 或 ARM64）</li>
+                <li><strong>内存</strong>: 至少 4GB RAM（推荐 8GB 以上）</li>
+                <li><strong>存储空间</strong>: 至少 10GB 可用空间</li>
+                <li><strong>网络</strong>: 稳定的互联网连接</li>
+            </ul>
+        </section>
+
+        <!-- ROS Version Selection -->
+        <section id="versions" class="section">
+            <h2>🎯 ROS 版本选择</h2>
             
-            <!-- Verification Section -->
-            <section class="verification-section" id="verification-section" style="display: none;">
-                <h2 data-i18n="verificationComplete">Verification Complete!</h2>
-                <div class="success-message">
-                    <div class="success-icon">✅</div>
-                    <h3 data-i18n="installationSuccessful">ROS Installation Successful!</h3>
-                    <p data-i18n="successMessage">You've successfully installed ROS on your system. Here are some next steps to get started:</p>
-                    <ul class="next-steps">
-                        <li data-i18n="tryTurtlesim">Try running the turtlesim example: <code>rosrun turtlesim turtlesim_node</code></li>
-                        <li data-i18n="exploreTutorials">Explore ROS tutorials: <a href="http://wiki.ros.org/ROS/Tutorials" target="_blank">ROS Wiki</a></li>
-                        <li data-i18n="joinCommunity">Join the ROS community: <a href="https://discourse.ros.org/" target="_blank">ROS Discourse</a></li>
-                    </ul>
-                </div>
-            </section>
-        </main>
-        
-        <!-- Footer -->
-        <footer class="footer">
-            <div class="footer-content">
-                <p>&copy; 2024 Interactive ROS Installation Guide. All rights reserved.</p>
-                <p>Based on the <a href="https://github.com/matreshka15/ROS-based-USV-project" target="_blank">ROS-based-USV-project</a></p>
+            <h3>推荐版本: ROS Noetic Ninjemys</h3>
+            <div class="alert alert-success">
+                <p><strong>适用系统</strong>: Ubuntu 20.04 LTS</p>
+                <p><strong>支持状态</strong>: 长期支持，持续维护</p>
             </div>
-        </footer>
+            
+            <h4>特点</h4>
+            <ul>
+                <li>ROS 1 系列的最新稳定版本</li>
+                <li>广泛的硬件和软件支持</li>
+                <li>学习资源丰富</li>
+                <li>从 ROS 1 迁移到 ROS 2 的成本较低</li>
+            </ul>
+
+            <h3>其他版本选择</h3>
+            <ul>
+                <li><strong>ROS Melodic</strong>: 适用于 Ubuntu 18.04，适合需要兼容性的项目</li>
+                <li><strong>ROS 2 Iron</strong>: 适用于 Ubuntu 22.04，适合新项目开发，支持更多现代特性</li>
+            </ul>
+        </section>
+
+        <!-- Installation Steps -->
+        <section id="installation" class="section">
+            <h2>⚙️ 安装步骤</h2>
+
+            <h3>1. 系统准备</h3>
+            
+            <h4>1.1 配置软件源</h4>
+            <p>打开 "软件和更新" 设置，确保以下选项被勾选：</p>
+            <ul>
+                <li>main</li>
+                <li>universe</li>
+                <li>restricted</li>
+                <li>multiverse</li>
+            </ul>
+
+            <h4>1.2 备份并更新软件源列表</h4>
+            <pre><code class="language-bash"># 备份原始软件源
+sudo cp /etc/apt/sources.list /etc/apt/sources.list.backup
+
+# 更新软件包索引
+sudo apt update
+sudo apt upgrade -y</code></pre>
+
+            <h3>2. 添加 ROS 软件源</h3>
+            
+            <h4>2.1 官方源（推荐有良好网络连接时使用）</h4>
+            <pre><code class="language-bash">sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'</code></pre>
+
+            <h4>2.2 国内镜像源（推荐国内用户使用）</h4>
+            
+            <p><strong>清华大学源</strong></p>
+            <pre><code class="language-bash">sudo sh -c '. /etc/lsb-release && echo "deb http://mirrors.tuna.tsinghua.edu.cn/ros/ubuntu/ `lsb_release -cs` main" > /etc/apt/sources.list.d/ros-latest.list'</code></pre>
+
+            <p><strong>上海交通大学源</strong></p>
+            <pre><code class="language-bash">sudo sh -c '. /etc/lsb-release && echo "deb http://mirrors.sjtug.sjtu.edu.cn/ros/ubuntu/ `lsb_release -cs` main" > /etc/apt/sources.list.d/ros-latest.list'</code></pre>
+
+            <p><strong>中国科学技术大学源</strong></p>
+            <pre><code class="language-bash">sudo sh -c '. /etc/lsb-release && echo "deb http://mirrors.ustc.edu.cn/ros/ubuntu/ `lsb_release -cs` main" > /etc/apt/sources.list.d/ros-latest.list'</code></pre>
+
+            <h3>3. 添加密钥</h3>
+            <pre><code class="language-bash">sudo apt-key adv --keyserver 'hkp://keyserver.ubuntu.com:80' --recv-key C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654</code></pre>
+
+            <p>如果上述命令失败，可以尝试：</p>
+            <pre><code class="language-bash">sudo apt install curl
+curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | sudo apt-key add -</code></pre>
+
+            <h3>4. 更新软件包索引</h3>
+            <pre><code class="language-bash">sudo apt update</code></pre>
+
+            <h3>5. 安装 ROS</h3>
+            
+            <h4>5.1 安装完整版（推荐）</h4>
+            <p>包含 ROS、rqt、rviz、机器人通用库、2D/3D 模拟器等</p>
+            <pre><code class="language-bash">sudo apt install ros-noetic-desktop-full</code></pre>
+
+            <h4>5.2 安装桌面版</h4>
+            <p>包含 ROS 基础功能、机器人通用函数库、rqt 工具箱和 rviz 可视化工具</p>
+            <pre><code class="language-bash">sudo apt install ros-noetic-desktop</code></pre>
+
+            <h4>5.3 安装基础版</h4>
+            <p>仅包含核心功能包、构建工具和通信机制，适合嵌入式系统</p>
+            <pre><code class="language-bash">sudo apt install ros-noetic-ros-base</code></pre>
+
+            <h4>5.4 安装特定功能包</h4>
+            <pre><code class="language-bash">sudo apt install ros-noetic-PACKAGE_NAME</code></pre>
+
+            <h3>6. 设置环境变量</h3>
+            
+            <h4>6.1 临时设置（当前终端有效）</h4>
+            <pre><code class="language-bash">source /opt/ros/noetic/setup.bash</code></pre>
+
+            <h4>6.2 永久设置（推荐）</h4>
+            
+            <p><strong>Bash 用户</strong></p>
+            <pre><code class="language-bash">echo "source /opt/ros/noetic/setup.bash" >> ~/.bashrc
+source ~/.bashrc</code></pre>
+
+            <p><strong>Zsh 用户</strong></p>
+            <pre><code class="language-bash">echo "source /opt/ros/noetic/setup.zsh" >> ~/.zshrc
+source ~/.zshrc</code></pre>
+
+            <h3>7. 安装开发工具</h3>
+            <pre><code class="language-bash">sudo apt install python3-rosdep python3-rosinstall python3-rosinstall-generator python3-wstool build-essential</code></pre>
+
+            <h3>8. 初始化 rosdep</h3>
+            
+            <h4>8.1 标准方法</h4>
+            <pre><code class="language-bash">sudo rosdep init
+rosdep update</code></pre>
+
+            <h4>8.2 国内优化方法（推荐）</h4>
+            <p>由于网络原因，国内用户推荐使用 rosdepc（中国版本）</p>
+            <pre><code class="language-bash"># 安装pip3
+sudo apt install python3-pip
+
+# 安装rosdepc
+sudo pip3 install rosdepc
+
+# 初始化rosdepc
+sudo rosdepc init
+rosdepc update</code></pre>
+        </section>
+
+        <!-- Automation Scripts -->
+        <section id="scripts" class="section">
+            <h2>🚀 自动化安装脚本</h2>
+
+            <h3>一键安装脚本</h3>
+            <p>我们提供了自动化安装脚本，可以简化安装过程：</p>
+
+            <pre><code class="language-bash">#!/bin/bash
+
+# ROS Noetic 一键安装脚本
+echo "开始安装ROS Noetic..."
+
+# 更新系统
+sudo apt update && sudo apt upgrade -y
+
+# 安装依赖
+sudo apt install -y curl gnupg2 lsb-release
+
+# 添加ROS源（清华源）
+sudo sh -c '. /etc/lsb-release && echo "deb http://mirrors.tuna.tsinghua.edu.cn/ros/ubuntu/ `lsb_release -cs` main" > /etc/apt/sources.list.d/ros-latest.list'
+
+# 添加密钥
+sudo apt-key adv --keyserver 'hkp://keyserver.ubuntu.com:80' --recv-key C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654
+
+# 更新软件包
+sudo apt update
+
+# 安装ROS Noetic完整版
+sudo apt install -y ros-noetic-desktop-full
+
+# 设置环境变量
+echo "source /opt/ros/noetic/setup.bash" >> ~/.bashrc
+source ~/.bashrc
+
+# 安装开发工具
+sudo apt install -y python3-rosdep python3-rosinstall python3-rosinstall-generator python3-wstool build-essential
+
+# 安装并初始化rosdepc
+sudo apt install -y python3-pip
+sudo pip3 install rosdepc
+sudo rosdepc init
+rosdepc update
+
+echo "ROS Noetic安装完成！"
+echo "请重新打开终端或执行: source ~/.bashrc"</code></pre>
+
+            <h3>使用方法</h3>
+            <ol>
+                <li>保存上述脚本为 <code>install_ros.sh</code></li>
+                <li>添加执行权限：<code>chmod +x install_ros.sh</code></li>
+                <li>运行脚本：<code>./install_ros.sh</code></li>
+            </ol>
+
+            <div class="alert alert-info">
+                <strong>提示</strong>: 本仓库已包含 <code>install_ros.sh</code> 和 <code>test_ros.sh</code> 脚本，可直接使用。
+            </div>
+        </section>
+
+        <!-- Testing & Verification -->
+        <section id="testing" class="section">
+            <h2>✅ 测试验证</h2>
+
+            <h3>验证 ROS 安装</h3>
+            <p>打开新的终端，执行：</p>
+            <pre><code class="language-bash">roscore</code></pre>
+
+            <p>如果显示类似以下信息，说明 ROS 核心服务启动成功：</p>
+            <pre><code class="language-plaintext">... logging to /home/user/.ros/log/xxxx-xxxx-xxxx-xxxx/roslaunch-xxxx-xxxx.log
+
+Checking log directory for disk usage. This may take a while.
+Press Ctrl-C to interrupt
+Done checking log file disk usage. Usage is &lt;1GB.
+
+started roslaunch server http://localhost:11311/
+ros_comm version 1.15.14
+
+SUMMARY
+========
+PARAMETERS
+ * /rosdistro: noetic
+ * /rosversion: 1.15.14
+
+NODES
+
+auto-starting new master
+process[master]: started with pid [xxxx]
+ROS_MASTER_URI=http://localhost:11311/
+
+setting /run_id to xxxx-xxxx-xxxx-xxxx
+process[rosout-1]: started with pid [xxxx]
+started core service [/rosout]</code></pre>
+
+            <h3>运行小海龟示例</h3>
+            <ol>
+                <li>保持 roscore 运行，打开新终端：
+                    <pre><code class="language-bash">rosrun turtlesim turtlesim_node</code></pre>
+                </li>
+                <li>打开第三个终端，运行键盘控制节点：
+                    <pre><code class="language-bash">rosrun turtlesim turtle_teleop_key</code></pre>
+                </li>
+                <li>在键盘控制终端中，使用方向键控制小海龟移动</li>
+            </ol>
+
+            <h3>运行 RViz 可视化工具</h3>
+            <pre><code class="language-bash">rviz</code></pre>
+        </section>
+
+        <!-- Troubleshooting -->
+        <section id="troubleshooting" class="section">
+            <h2>🔧 常见问题解决</h2>
+
+            <h3>1. 网络连接问题</h3>
+            <div class="alert alert-warning">
+                <p><strong>问题</strong>: 无法连接到 ROS 服务器或下载速度慢</p>
+                <p><strong>解决方案</strong>:</p>
+                <ul>
+                    <li>使用国内镜像源</li>
+                    <li>检查网络连接</li>
+                    <li>使用代理服务器</li>
+                    <li>安装rosdepc替代rosdep</li>
+                </ul>
+            </div>
+
+            <h3>2. 密钥添加失败</h3>
+            <div class="alert alert-warning">
+                <p><strong>问题</strong>: <code>apt-key</code> 命令执行失败</p>
+                <p><strong>解决方案</strong>:</p>
+                <pre><code class="language-bash">sudo apt install curl
+curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | sudo apt-key add -</code></pre>
+            </div>
+
+            <h3>3. rosdep 初始化失败</h3>
+            <div class="alert alert-warning">
+                <p><strong>问题</strong>: <code>sudo rosdep init</code> 失败</p>
+                <p><strong>解决方案</strong>:</p>
+                <ul>
+                    <li>使用 rosdepc 替代</li>
+                    <li>检查网络连接</li>
+                    <li>手动创建 sources.list.d 文件</li>
+                </ul>
+            </div>
+
+            <h3>4. 软件包依赖问题</h3>
+            <div class="alert alert-warning">
+                <p><strong>问题</strong>: 安装过程中出现依赖错误</p>
+                <p><strong>解决方案</strong>:</p>
+                <pre><code class="language-bash">sudo apt --fix-broken install
+sudo apt autoremove
+sudo apt autoclean</code></pre>
+            </div>
+
+            <h3>5. 权限问题</h3>
+            <div class="alert alert-warning">
+                <p><strong>问题</strong>: 执行脚本时出现权限错误</p>
+                <p><strong>解决方案</strong>:</p>
+                <pre><code class="language-bash">chmod +x script_name.sh
+sudo ./script_name.sh</code></pre>
+            </div>
+
+            <h3>6. 环境变量问题</h3>
+            <div class="alert alert-warning">
+                <p><strong>问题</strong>: 找不到ROS命令</p>
+                <p><strong>解决方案</strong>:</p>
+                <pre><code class="language-bash">source /opt/ros/noetic/setup.bash
+echo "source /opt/ros/noetic/setup.bash" >> ~/.bashrc</code></pre>
+            </div>
+        </section>
+
+        <!-- Example Code -->
+        <section id="examples" class="section">
+            <h2>📝 示例代码</h2>
+
+            <h3>1. 简单的 ROS 节点示例</h3>
+
+            <h4>发布者节点 (examples/talker.py)</h4>
+            <pre><code class="language-python">#!/usr/bin/env python3
+
+import rospy
+from std_msgs.msg import String
+
+def talker():
+    # 初始化节点
+    rospy.init_node('talker', anonymous=True)
+
+    # 创建发布者，发布到chatter话题
+    pub = rospy.Publisher('chatter', String, queue_size=10)
+
+    # 设置循环频率
+    rate = rospy.Rate(10)  # 10Hz
+
+    while not rospy.is_shutdown():
+        # 创建消息内容
+        hello_str = "hello world %s" % rospy.get_time()
+
+        # 发布消息
+        pub.publish(hello_str)
+
+        # 打印日志信息
+        rospy.loginfo(hello_str)
+
+        # 按照设定频率休眠
+        rate.sleep()
+
+if __name__ == '__main__':
+    try:
+        talker()
+    except rospy.ROSInterruptException:
+        pass</code></pre>
+
+            <h4>订阅者节点 (examples/listener.py)</h4>
+            <pre><code class="language-python">#!/usr/bin/env python3
+
+import rospy
+from std_msgs.msg import String
+
+def callback(data):
+    # 回调函数，处理接收到的消息
+    rospy.loginfo(rospy.get_caller_id() + "I heard %s", data.data)
+
+def listener():
+    # 初始化节点
+    rospy.init_node('listener', anonymous=True)
+
+    # 创建订阅者，订阅chatter话题
+    rospy.Subscriber("chatter", String, callback)
+
+    # 保持节点运行
+    rospy.spin()
+
+if __name__ == '__main__':
+    listener()</code></pre>
+
+            <h3>2. 创建 ROS 功能包</h3>
+            <pre><code class="language-bash"># 创建工作空间
+mkdir -p ~/catkin_ws/src
+cd ~/catkin_ws/
+catkin_make
+
+# 设置环境变量
+source devel/setup.bash
+
+# 创建功能包
+cd src
+catkin_create_pkg beginner_tutorials std_msgs rospy roscpp
+
+# 编译功能包
+cd ~/catkin_ws/
+catkin_make</code></pre>
+
+            <h3>3. 运行示例节点</h3>
+            <pre><code class="language-bash"># 启动ROS核心
+roscore
+
+# 在新终端中运行发布者
+rosrun beginner_tutorials talker.py
+
+# 在另一个新终端中运行订阅者
+rosrun beginner_tutorials listener.py</code></pre>
+
+            <h3>项目结构</h3>
+            <pre><code class="language-plaintext">ROS_Installation_Guide/
+├── README.md                      # 项目说明
+├── index.html                     # 文档网站（本页）
+├── interactive.html               # 交互式安装向导
+├── install_ros.sh                 # 一键安装脚本
+├── test_ros.sh                    # 安装测试脚本
+├── examples/                      # 示例代码
+│   ├── talker.py                  # 发布者节点示例
+│   └── listener.py                # 订阅者节点示例
+├── config/                        # 配置文件
+│   └── example_config.yaml        # 配置文件示例
+├── launch/                        # 启动文件
+│   └── example.launch             # 启动文件示例
+├── css/                           # 样式文件
+├── js/                            # JavaScript 文件
+└── .github/                       # GitHub 配置
+    └── workflows/                 # GitHub Actions
+        └── deploy-pages.yml       # Pages 部署工作流</code></pre>
+        </section>
+
+        <!-- References -->
+        <section id="references" class="section">
+            <h2>📚 参考资料</h2>
+
+            <h3>官方文档</h3>
+            <ul>
+                <li><a href="http://www.ros.org/" target="_blank">ROS 官方网站</a></li>
+                <li><a href="http://wiki.ros.org/noetic" target="_blank">ROS Noetic 文档</a></li>
+                <li><a href="http://wiki.ros.org/ROS/Tutorials" target="_blank">ROS 教程</a></li>
+            </ul>
+
+            <h3>国内资源</h3>
+            <ul>
+                <li><a href="https://fishros.com/" target="_blank">鱼香ROS</a></li>
+                <li><a href="http://www.rosclub.cn/" target="_blank">ROS 中文社区</a></li>
+                <li><a href="http://wiki.ros.org/cn" target="_blank">ROS 中文教程</a></li>
+            </ul>
+
+            <h3>书籍推荐</h3>
+            <ul>
+                <li>《ROS机器人开发实践》</li>
+                <li>《A Gentle Introduction to ROS》</li>
+                <li>《ROS By Example》</li>
+            </ul>
+
+            <h3>常用命令</h3>
+            <h4>ROS 基础命令</h4>
+            <pre><code class="language-bash"># 启动ROS核心
+roscore
+
+# 运行节点
+rosrun package_name node_name
+
+# 启动launch文件
+roslaunch package_name launch_file.launch
+
+# 查看节点信息
+rosnode list
+rosnode info node_name
+
+# 查看话题信息
+rostopic list
+rostopic echo topic_name
+rostopic hz topic_name
+
+# 查看服务信息
+rosservice list
+rosservice call service_name
+
+# 查看参数信息
+rosparam list
+rosparam get param_name
+rosparam set param_name value</code></pre>
+
+            <h4>工作空间命令</h4>
+            <pre><code class="language-bash"># 创建工作空间
+mkdir -p ~/catkin_ws/src
+cd ~/catkin_ws
+catkin_make
+
+# 设置环境变量
+source devel/setup.bash
+
+# 创建功能包
+cd src
+catkin_create_pkg package_name dependencies
+
+# 编译工作空间
+cd ~/catkin_ws
+catkin_make
+
+# 清理工作空间
+catkin_make clean</code></pre>
+
+            <h4>调试命令</h4>
+            <pre><code class="language-bash"># 查看ROS日志
+rosclean check
+rosclean purge
+
+# 录制和回放数据
+rosbag record -a
+rosbag play bag_file.bag
+
+# 动态重配置
+rosrun rqt_reconfigure rqt_reconfigure
+
+# 可视化工具
+rviz
+rqt
+rqt_graph</code></pre>
+        </section>
+
+        <!-- Project Information -->
+        <section class="section">
+            <h2>ℹ️ 项目信息</h2>
+
+            <h3>贡献指南</h3>
+            <p>欢迎贡献代码、文档或提出问题。请遵循以下步骤：</p>
+            <ol>
+                <li>Fork 本项目</li>
+                <li>创建特性分支</li>
+                <li>提交更改</li>
+                <li>推送分支</li>
+                <li>创建 Pull Request</li>
+            </ol>
+
+            <h3>许可证</h3>
+            <p>本项目采用 MIT 许可证，详情请参考 <a href="LICENSE" target="_blank">LICENSE</a> 文件。</p>
+
+            <h3>联系信息</h3>
+            <ul>
+                <li>GitHub: <a href="https://github.com/matreshka15/ROS_Installation_Guide" target="_blank">matreshka15/ROS_Installation_Guide</a></li>
+                <li>参考项目: <a href="https://github.com/matreshka15/ROS-based-USV-project" target="_blank">ROS-based-USV-project</a></li>
+            </ul>
+        </section>
     </div>
-    
-    <!-- JavaScript Files -->
-    <script src="js/data.js"></script>
-    <script src="js/prism.js"></script>
-    <script src="js/app.js"></script>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <p>&copy; 2024 ROS 安装指南 | ROS Installation Guide. All rights reserved.</p>
+            <p>基于 <a href="https://github.com/matreshka15/ROS-based-USV-project" target="_blank">ROS-based-USV-project</a> 项目</p>
+            <p>
+                <a href="https://github.com/matreshka15/ROS_Installation_Guide" target="_blank">GitHub 仓库</a> |
+                <a href="http://wiki.ros.org/" target="_blank">ROS 官方文档</a> |
+                <a href="interactive.html">交互式安装向导</a>
+            </p>
+        </div>
+    </footer>
+
+    <!-- Back to Top Button -->
+    <button class="back-to-top" id="backToTop" title="返回顶部">↑</button>
+
+    <!-- Prism.js for Syntax Highlighting -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-yaml.min.js"></script>
+
+    <!-- Custom JavaScript -->
+    <script>
+        // Back to Top Button
+        const backToTop = document.getElementById('backToTop');
+        
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                backToTop.classList.add('show');
+            } else {
+                backToTop.classList.remove('show');
+            }
+        });
+
+        backToTop.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+
+        // Smooth scroll for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Highlight current section in navigation
+        const sections = document.querySelectorAll('.section');
+        const navLinks = document.querySelectorAll('.nav-link');
+
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if (pageYOffset >= sectionTop - 200) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.style.color = '';
+                link.style.borderBottomColor = '';
+                if (link.getAttribute('href') === `#${current}`) {
+                    link.style.color = 'var(--primary-color)';
+                    link.style.borderBottomColor = 'var(--primary-color)';
+                }
+            });
+        });
+    </script>
 </body>
 </html>
